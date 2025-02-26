@@ -1,0 +1,38 @@
+.preview {
+    display: flex;
+    gap: 10px;
+    padding-bottom: 10px;
+}
+
+.previewContainer {
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.previewImage {
+    height: 100%;
+}
+
+.delete {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteIcon {
+    width: 20px;
+    height: 20px;
+}

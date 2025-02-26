@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "lib": [
+            "es5",
+            "es6",
+            "dom"
+        ],
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es5",
+        "jsx": "react",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node"
+    },
+    "include": [
+         "src/Globals.d.tsd.ts",
+        "ui/src/**/*"
+       
+    ]
+}

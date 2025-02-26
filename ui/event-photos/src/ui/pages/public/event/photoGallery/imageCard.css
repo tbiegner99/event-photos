@@ -1,0 +1,11 @@
+.selected {
+    border: 3px solid #007bff;
+    border-radius: 5px;
+}
+
+.icon {
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 50%;
+}

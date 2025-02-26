@@ -1,0 +1,18 @@
+version: '3.3'
+networks:
+  event-photos-local-dev:
+    external: true
+services:
+  event-photos-db:
+    image: postgres
+    restart: always
+    container_name: event-photos-db
+    environment:
+      POSTGRES_USER: 'event-photos'
+      POSTGRES_PASSWORD: 'event-photos'
+    networks:
+      - event-photos-local-dev
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db/postgres-data:/var/lib/postgresql/data

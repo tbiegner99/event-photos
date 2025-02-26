@@ -1,0 +1,60 @@
+.media {
+    height: 100%;
+    width: 100%;
+
+    /* object-fit: fill; */
+    touch-action: pan-x pan-y;
+}
+
+.mediaContainer {
+    height: 100%;
+    width: 100vw;
+    background-color: black;
+}
+
+.hidden {
+    opacity: 0;
+}
+
+:global(.Mui-disabled) {
+    opacity: 0.25;
+    background-color: white !important;
+    color: inherit !important;
+}
+
+@media (orientation: landscape) {
+    .media,
+    .pictureCanvas {
+        width: 70% !important;
+    }
+
+    .mediaContainer {
+        flex-direction: row !important;
+    }
+
+    .footerControls {
+        flex-direction: column !important;
+    }
+}
+
+@media (orientation: portrait) {
+    .media,
+    .pictureCanvas {
+        height: 70% !important;
+    }
+
+    .mediaContainer {
+        flex-direction: column !important;
+    }
+
+    .footerControls {
+        flex-direction: row !important;
+    }
+}
+
+.pictureCanvas {
+    /* width: 100%;
+    height: 100%; */
+    object-fit: contain;
+    display: none;
+}

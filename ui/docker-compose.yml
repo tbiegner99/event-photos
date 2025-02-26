@@ -1,0 +1,20 @@
+version: "3"
+networks:
+  event-photos-local-dev:
+    external: true
+services:
+  "event-photos-ui":
+    image: nginx
+    container_name: "event-photos-ui"
+    networks:
+      - event-photos-local-dev
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 80:80 
+    volumes:
+      - "$EVENT_PHOTOS_HOME/ui/apps:/srv/package"
+      - "$EVENT_PHOTOS_HOME/ui:/ui-config"
+      - "$EVENT_PHOTOS_HOME/ui/apps/ci-helpers:/setup"
+      - "$EVENT_PHOTOS_HOME/local-dev/nginx/certs:/srv/certs"
+      - "$EVENT_PHOTOS_HOME/local-dev/nginx/nginx.conf:/etc/nginx/nginx.conf"

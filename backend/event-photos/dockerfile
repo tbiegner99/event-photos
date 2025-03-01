@@ -1,0 +1,22 @@
+FROM node:20 AS build
+WORKDIR /srv/package
+COPY package.json .
+COPY package-lock.json .
+COPY tsconfig.json .
+
+COPY ./src src
+RUN npm ci
+RUN npm run build
+
+FROM node:20
+COPY --from=build /srv/package/build /srv/package/build
+COPY --from=build /srv/package/node_modules /srv/package/node_modules
+COPY --from=build /srv/package/package.json /srv/package/package.json
+
+ENV DEBUGGER_ARGS=
+WORKDIR /srv/package
+RUN apt-get update 
+RUN apt-get install ffmpeg  -y
+
+
+CMD node ./build/app.js

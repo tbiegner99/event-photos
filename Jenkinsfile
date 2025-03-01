@@ -34,7 +34,7 @@ pipeline {
                     steps {
 
                         dir("server") {
-                            sh 'docker build .'
+                            // sh 'docker build .'
 
                         }
                         echo "BACKEND BUILD Complete..."
@@ -58,7 +58,7 @@ pipeline {
                     steps {
                         unstash 'ui_build'
                         sh 'ls build'
-                        sshPublisher(publishers: [sshPublisherDesc(configName: 'tj-ubuntu-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/media/vms/post-events', remoteDirectorySDF: false, removePrefix: 'ui/event-photos/build', sourceFiles: 'ui/event-photos/build/**/*')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                        sshPublisher(publishers: [sshPublisherDesc(configName: 'tj-ubuntu-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/media/tj/media//vms/post-events', remoteDirectorySDF: false, removePrefix: 'ui/event-photos/build', sourceFiles: 'ui/event-photos/build/**/*')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                         echo "UI DEPLOY Complete..."
                     }
                 }
@@ -66,7 +66,7 @@ pipeline {
                  stage("Deploy Baackend") {
                     steps {
                         echo "BACKEND DEPLOY Complete..."
-                        sshPublisher(publishers: [sshPublisherDesc(configName: 'tj-ubuntu-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/media/vms/post-events', remoteDirectorySDF: false, removePrefix: 'backend/event-photos', sourceFiles: 'backend/event-photos/dockerfile')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                        sshPublisher(publishers: [sshPublisherDesc(configName: 'tj-ubuntu-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/media/tj/media/vms/post-events', remoteDirectorySDF: false, removePrefix: 'backend/event-photos', sourceFiles: 'backend/event-photos/dockerfile')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                         sshagent(credentials: ['tj-ubuntu-server']) {
                             sh "cd /media/vms/post-events"
                             sh "echo `pwd`"

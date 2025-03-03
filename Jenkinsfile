@@ -1,13 +1,13 @@
+def remote = [:]
+remote.name = 'tj-ubuntu-server'
+remote.host = 'host.docker.internal'
+remote.allowAnyHosts = true
+
 pipeline {
-    agent any
+    agent none
 
     stages {
-        stage('Checkout') {
-            steps {
-                echo "Checking out code..."
-                checkout scm
-            }
-        }
+     
         stage('Build') {
             parallel {
                 stage("Build UI") {
@@ -18,8 +18,7 @@ pipeline {
 
                         dir("ui/event-photos") {
                             sh 'pwd'
-                            sh 'ls'
-                            sh 'npm i'
+                            sh 'npm ci'
                             sh 'npm run build'
                             echo "UI BUILD Complete..."
                             sh 'ls build'
@@ -31,22 +30,44 @@ pipeline {
                 }
 
                  stage("Build Backend") {
+                    agent {
+                       docker "node:20"
+                    }
                     steps {
 
-                        dir("server") {
-                            // sh 'docker build .'
+                        dir("backend/event-photos") {
+                            sh 'pwd'
+                            sh 'npm ci'
+                            sh 'npm run build'
+                            
+                            sh 'ls build'
+                           stash includes: 'build/**', name: 'backend_build'
+                           echo "BACKEND BUILD Complete..."
 
                         }
-                        echo "BACKEND BUILD Complete..."
+                        
                     }
                 }
             }
 
         }
          stage('Migrate') {
-
+            agent {
+                docker {
+                    dockerfile "database/event-photos"
+                } 
+            }
+            environment {
+                DATABASE_CREDS = credentials('DATABASE_CREDS')
+                DATABASE_URL = "event-photos-db"
+                DATABASE_PORT = "5432"
+                DATABASE_SCHEMA = "event-photos"      
+            }
             steps {
-                echo "Migration Complete..."
+                dir("backend/event-photos") {
+                    sh "liquibase update  --username=$DATABASE_CREDS_USR --password=$DATABASE_CREDS_PSW --url=jdbc:postgresql://$DATABASE_URL:$DATABASE_PORT/$DATABASE_SCHEMA --changelogFile=changelog-root.xml"
+                    echo "Migration Complete..."
+                }
             }
 
         }
@@ -55,23 +76,145 @@ pipeline {
             failFast true
             parallel {
                 stage("Deploy UI") {
+                    agent {
+                       docker "alpine:3"
+                    }
+                  
                     steps {
                         unstash 'ui_build'
-                        sh 'ls build'
-                        sshPublisher(publishers: [sshPublisherDesc(configName: 'tj-ubuntu-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/media/tj/media//vms/post-events', remoteDirectorySDF: false, removePrefix: 'ui/event-photos/build', sourceFiles: 'ui/event-photos/build/**/*')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                        echo "UI DEPLOY Complete..."
+                        dir("ui/event-photos") {
+                            sh 'ls build'
+                            sshPublisher(publishers: [
+                                sshPublisherDesc(
+                                    configName: 'tj-ubuntu-server', 
+                                    transfers: [
+                                        sshTransfer(
+                                            cleanRemote: false, 
+                                            excludes: '', 
+                                            execCommand: '', 
+                                            execTimeout: 120000, 
+                                            flatten: false, 
+                                            makeEmptyDirs: true, 
+                                            noDefaultExcludes: false, 
+                                            patternSeparator: '[, ]+', 
+                                            remoteDirectory: 'vms/post-events/ui', 
+                                            remoteDirectorySDF: false, 
+                                            removePrefix: 'build', 
+                                            sourceFiles: 'build/**/*'
+                                            )
+                                        ], 
+                                        usePromotionTimestamp: false, 
+                                        useWorkspaceInPromotion: false, 
+                                        verbose: true
+                                    )
+                                ])
+                            echo "UI DEPLOY Complete..."
+                        }
                     }
                 }
 
-                 stage("Deploy Baackend") {
+                 stage("Deploy Backend") {
+                     agent {
+                       docker "alpine:3"
+                    }
+                      environment {
+                        DATABASE_URL = "event-photos-db"
+                        DATABASE_PORT = "5432"
+                        DATABASE_SCHEMA = "event-photos"
+                        SUPERTOKENS_CONNECTION_URI = "https://st-dev-8caae1a0-e9bb-11ef-ba64-95a903bab5ec.aws.supertokens.io"
+                        GOOGLE_CLOUD_PROJECT_ID = "event-photos-377222"
+                        GOOGLE_BUCKET_NAME = "event-photos.tjbiegner.com"
+                        GOOGLE_BUCKET_PUBLIC_URL = "https://storage.googleapis.com/event-photos.tjbiegner.com"
+                    }
                     steps {
-                        echo "BACKEND DEPLOY Complete..."
-                        sshPublisher(publishers: [sshPublisherDesc(configName: 'tj-ubuntu-server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/media/tj/media/vms/post-events', remoteDirectorySDF: false, removePrefix: 'backend/event-photos', sourceFiles: 'backend/event-photos/dockerfile')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                        sshagent(credentials: ['tj-ubuntu-server']) {
-                            sh "cd /media/vms/post-events"
-                            sh "echo `pwd`"
-                            sh "docker-compose up -d"
+                        unstash 'backend_build'
+                        withCredentials([file(credentialsId: 'GOOGLE_APPLICATION_CREDENTIALS', variable: 'SECRETS_FILE')]) {
+                            sshPublisher(
+                            publishers: [
+                                sshPublisherDesc(
+                                    configName: 'tj-ubuntu-server', 
+                                    transfers: [
+                                        sshTransfer(
+                                            cleanRemote: false, 
+                                            excludes: '', 
+                                            execCommand: '', 
+                                            execTimeout: 120000, 
+                                            flatten: false, 
+                                            makeEmptyDirs: false, 
+                                            noDefaultExcludes: false, 
+                                            patternSeparator: '[, ]+', 
+                                            remoteDirectory: 'vms/post-events', 
+                                            remoteDirectorySDF: false, 
+                                            removePrefix: 'backend/event-photos', 
+                                            sourceFiles: "$SECRETS_FILE"
+                                            )
+                                            ], 
+                                            usePromotionTimestamp: false, 
+                                            useWorkspaceInPromotion: false, 
+                                            verbose: false
+                                            )
+                                            ]
+                                            )
                         }
+                        sshPublisher(
+                            publishers: [
+                                sshPublisherDesc(
+                                    configName: 'tj-ubuntu-server', 
+                                    transfers: [
+                                        sshTransfer(
+                                            cleanRemote: false, 
+                                            excludes: '', 
+                                            execCommand: '', 
+                                            execTimeout: 120000, 
+                                            flatten: false, 
+                                            makeEmptyDirs: false, 
+                                            noDefaultExcludes: false, 
+                                            patternSeparator: '[, ]+', 
+                                            remoteDirectory: 'vms/post-events', 
+                                            remoteDirectorySDF: false, 
+                                            removePrefix: 'backend/event-photos', 
+                                            sourceFiles: 'backend/event-photos/dockerfile'
+                                            )
+                                            ], 
+                                            usePromotionTimestamp: false, 
+                                            useWorkspaceInPromotion: false, 
+                                            verbose: false
+                                            )
+                                            ]
+                                            )
+                        dir("backend/event-photos") {
+                            sh 'ls build'
+                            sshPublisher(publishers: [
+                                sshPublisherDesc(
+                                    configName: 'tj-ubuntu-server', 
+                                    transfers: [
+                                        sshTransfer(
+                                            cleanRemote: false, 
+                                            excludes: '', 
+                                            execCommand: '', 
+                                            execTimeout: 120000, 
+                                            flatten: false, 
+                                            makeEmptyDirs: true, 
+                                            noDefaultExcludes: false, 
+                                            patternSeparator: '[, ]+', 
+                                            remoteDirectory: 'vms/post-events/backend', 
+                                            remoteDirectorySDF: false, 
+                                            removePrefix: 'build', 
+                                            sourceFiles: 'build/**/*'
+                                            )
+                                        ], 
+                                        usePromotionTimestamp: false, 
+                                        useWorkspaceInPromotion: false, 
+                                        verbose: true
+                                    )
+                                ])
+                               
+                            sshCommand(
+                                remote: remote,
+                                command: '/mnt/media/post-events && docker-compose up --build -d'
+                            )
+                        }
+                        echo "BACKEND DEPLOY Complete..."
                     }
                 }
             }

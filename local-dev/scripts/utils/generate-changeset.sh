@@ -29,6 +29,8 @@ xmlstarlet ed -L -N xsi="http://www.liquibase.org/xml/ns/dbchangelog" \
  -i "//includeTMP" -t attr -n "file" -v "changelogs/${FILENAME}" \
  -r //includeTMP -v include changelog-root.xml
 
+mkdir -p changelogs
+
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <databaseChangeLog
    xmlns=\"http://www.liquibase.org/xml/ns/dbchangelog\"
@@ -43,7 +45,7 @@ ${CONTENT}
 
 </databaseChangeLog>" > changelogs/$FILENAME
 
- (cat changelogs/$FILENAME | xml tr $EVENT_PHOTOS_HOME/local-dev/scripts/utils/sort-changesets.xml | xml fo --nsclean) > tmp.xml 
+ (cat changelogs/$FILENAME  | xml fo --nsclean) > tmp.xml 
   mv tmp.xml changelogs/$FILENAME
 
 # cat changelogs/$FILENAME | xml fo --nsclean > changelogs/$FILENAME

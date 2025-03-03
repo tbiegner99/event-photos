@@ -1,2 +1,2 @@
 #! /bin/bash
-docker run -v $EVENT_PHOTOS_HOME/database/event-photos:/liquibase/lib --network=event-photos-local-dev liquibase/liquibase liquibase update  --username=event-photos --password=event-photos --url=jdbc:postgresql://event-photos-db:5432/event-photos --changelogFile=changelog-root.xml
+docker run -v $EVENT_PHOTOS_HOME/database/event-photos:/liquibase/lib --network=event-photos-local-dev liquibase/liquibase liquibase update  --username=event-photos --password=event-photos --url=jdbc:postgresql://192.168.2.210:5432/event-photos --changelogFile=changelog-root.xml

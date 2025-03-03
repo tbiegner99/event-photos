@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd       http://www.liquibase.org/xml/ns/pro        http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
+  <changeSet author="tj (generated)" id="1740956612874-1">
+    <createTable tableName="event_photos">
+      <column name="photo_id" type="VARCHAR">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="event_photos_pk"/>
+      </column>
+      <column name="event_id" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column name="author" type="VARCHAR"/>
+      <column defaultValueComputed="now()" name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="now()" name="last_modified" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="'{}'" name="metadata" type="JSONB">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column name="size" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="content_type" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column name="author_name" type="VARCHAR"/>
+      <column name="role" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-2">
+    <createTable tableName="events">
+      <column name="event_id" type="VARCHAR">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="events_pk"/>
+      </column>
+      <column name="name" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column name="event_date" type="date">
+        <constraints nullable="false"/>
+      </column>
+      <column name="hero_image_id" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="now()" name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="now()" name="last_modified" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column name="location" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-3">
+    <createTable tableName="guest_groups">
+      <column name="group_id" type="VARCHAR">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="guest_groups_pk"/>
+      </column>
+      <column name="event_id" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="now()" name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="now()" name="last_modified" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-4">
+    <createTable tableName="guests">
+      <column name="guest_id" type="VARCHAR">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="newtable_pk"/>
+      </column>
+      <column name="event_id" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column name="group_id" type="VARCHAR"/>
+      <column name="name" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="now()" name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="now()" name="last_modified" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-5">
+    <createTable tableName="photo_tags">
+      <column name="photo_id" type="VARCHAR">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="photo_tag_pk"/>
+      </column>
+      <column name="category" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tag" type="VARCHAR">
+        <constraints nullable="false"/>
+      </column>
+      <column defaultValueComputed="now()" name="date_created" type="TIMESTAMP WITHOUT TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-6">
+    <createIndex indexName="event_photos_author_idx" tableName="event_photos">
+      <column name="author"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-7">
+    <createIndex indexName="event_photos_created_date_idx" tableName="event_photos">
+      <column defaultValueComputed="now()" name="created_date"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-8">
+    <createIndex indexName="event_photos_event_id_idx" tableName="event_photos">
+      <column name="event_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-9">
+    <sql >
+     CREATE INDEX evt_photo_size ON public.event_photos 
+     USING btree ((((metadata ->> 'width'::text))::integer), 
+     (((metadata ->> 'height'::text))::integer));
+    </sql>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-10">
+    <sql>
+      CREATE INDEX evt_photo_keywords ON public.event_photos 
+      USING gin (((metadata -> 'keywords'::text)) jsonb_path_ops);
+    </sql>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-11">
+    <sql>
+      CREATE INDEX evt_photo_people ON public.event_photos 
+      USING gin (((metadata -> 'people'::text)) jsonb_path_ops);
+    </sql>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-12">
+    <createIndex indexName="events_event_date_idx" tableName="events">
+      <column name="event_date"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-13">
+    <createIndex indexName="guest_groups_event_id_idx" tableName="guest_groups">
+      <column name="event_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-14">
+    <createIndex indexName="newtable_event_id_idx" tableName="guests">
+      <column name="event_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-15">
+    <createIndex indexName="newtable_group_id_idx" tableName="guests">
+      <column name="group_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-16">
+    <createIndex indexName="newtable_name_idx" tableName="guests">
+      <column name="name"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-17">
+    <createIndex indexName="photo_tag_category_idx" tableName="photo_tags">
+      <column name="category"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="tj (generated)" id="1740956612874-18">
+    <createIndex indexName="photo_tag_tag_idx" tableName="photo_tags">
+      <column name="tag"/>
+    </createIndex>
+  </changeSet>
+</databaseChangeLog>

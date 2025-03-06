@@ -66,9 +66,9 @@ export const PhotoGallery = ({
     }, [slideshow, selected]);
 
     return (
-        <FlexColumn fullHeight justifyContent="space-between">
+        <FlexColumn fullHeight justifyContent="space-between" fullWidth>
             <FlexRow fullWidth grow={1}>
-                <FlexColumn fullHeight style={{ flexShrink: 1 }} gap={20}>
+                <FlexColumn fullHeight grow={1} gap={20}>
                     <FlexRow wrap gap={15}>
                         {photos.item?.map((photo) => (
                             <ImageCard
@@ -90,6 +90,7 @@ export const PhotoGallery = ({
                 </FlexColumn>
                 {!isMobile && (
                     <Resizable
+                        minWidth={'300px'}
                         style={{
                             borderLeft: '1px solid rgba(0,0,0,0.12)'
                         }}

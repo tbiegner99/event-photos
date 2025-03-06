@@ -15,7 +15,7 @@ import { LoadedItem } from '../../../../utils/LoadedItem';
 import { Link, UploadFile } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { urls } from '../../../../utils/constants';
-import { H1 } from '../../../components/typography/Typography';
+import { H1, H4 } from '../../../components/typography/Typography';
 
 export const EventsPage = ({
     onSave,
@@ -127,8 +127,8 @@ export const EventsPage = ({
                 </div>
             </FlexColumn>
             <Drawer open={isAdding} anchor={'right'} onClose={() => setIsAdding(false)}>
-                <FlexColumn className={styles.addForm}>
-                    <H1>Add New Event</H1>
+                <FlexColumn className={styles.addForm} gap={20}>
+                    <H4>Add New Event</H4>
                     <FlexColumn style={{ height: '100%' }}>
                         <FlexColumn grow={1} gap={20}>
                             <TextField
@@ -188,7 +188,7 @@ export const EventsPage = ({
                             </FlexRow>
                             <FlexRow justifyContent="flex-end">
                                 <ImageUpload
-                                    title={<UploadFile />}
+                                    title={'Upload Event Image'}
                                     onChange={(files) => {
                                         const file = files[0];
                                         if (!file) {

@@ -101,14 +101,14 @@ export function EventPage({
                         <H4>Photo Gallery</H4>
 
                         <FlexRow gap={10}>
-                            <Button
+                            {/* <Button
                                 onClick={() => {
                                     localStorage.clear();
                                     clearAuthor();
                                 }}
                             >
                                 DEBUG
-                            </Button>
+                            </Button> */}
                             <FileUploader
                                 multiple={true}
                                 accept="image/*,video/*"

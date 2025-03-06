@@ -21,8 +21,8 @@ SuperTokens.init({
     appInfo: {
         // learn more about this on https://supertokens.com/docs/references/app-info
         appName: 'event-photos',
-        apiDomain: 'http://localhost',
-        websiteDomain: 'http://localhost',
+        apiDomain: window.location.origin,
+        websiteDomain: window.location.origin,
         apiBasePath: '/api/event-photos',
         websiteBasePath: '/events'
     },

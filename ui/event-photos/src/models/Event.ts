@@ -10,6 +10,6 @@ export interface EventData {
     eventDate: Date;
     location: string;
     createdDate: Date;
-
+    config: any;
     lastModified?: Date;
 }

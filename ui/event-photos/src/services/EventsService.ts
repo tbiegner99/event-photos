@@ -23,10 +23,12 @@ export class EventsService {
     }
 
     async addEvent(event: EventData) {
-        if (!event.heroImage) {
+        if (!event.heroImage && !event.heroImageId) {
             throw new Error('Hero image is required');
         }
-        await this.photosDatasource.addPhoto(event.heroImage!);
+        if (event.heroImage) {
+            await this.photosDatasource.addPhoto(event.heroImage!);
+        }
         await this.eventsDatasource.addEvent(event);
     }
 

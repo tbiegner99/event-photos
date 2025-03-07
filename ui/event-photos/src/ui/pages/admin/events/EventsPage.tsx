@@ -15,7 +15,7 @@ import { LoadedItem } from '../../../../utils/LoadedItem';
 import { Link, UploadFile } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { urls } from '../../../../utils/constants';
-import { H1, H4 } from '../../../components/typography/Typography';
+import { H1, H4, H5, H6 } from '../../../components/typography/Typography';
 
 export const EventsPage = ({
     onSave,
@@ -79,7 +79,12 @@ export const EventsPage = ({
                         label="Edit"
                         className="textPrimary"
                         onClick={() => {
-                            onNavigate(urls.adminEvent(id as string));
+                            const item = events.item?.find((e) => e.eventId === id);
+                            if (item) {
+                                setRole('edit');
+                                setIsAdding(true);
+                                setAdding(item);
+                            }
                         }}
                         color="inherit"
                     />
@@ -89,9 +94,13 @@ export const EventsPage = ({
     ];
     const [isAdding, setIsAdding] = React.useState(false);
     const [adding, setAdding] = React.useState<Partial<EventData>>({});
+    const [role, setRole] = React.useState<string>('add');
     const canSave = () => {
         return (
-            adding && Boolean(adding.name) && Boolean(adding.location) && Boolean(adding.heroImage)
+            adding &&
+            Boolean(adding.name) &&
+            Boolean(adding.location) &&
+            (Boolean(adding.heroImage) || Boolean(adding.heroImageId))
         );
     };
     return (
@@ -102,11 +111,13 @@ export const EventsPage = ({
                         <Button
                             onClick={() => {
                                 setIsAdding(true);
+                                setRole('add');
                                 setAdding({
                                     eventId: v4(),
                                     description: '',
                                     location: '',
                                     name: '',
+                                    config: {},
                                     eventDate: dayjs().toDate(),
                                     createdDate: dayjs().toDate()
                                 });
@@ -128,7 +139,7 @@ export const EventsPage = ({
             </FlexColumn>
             <Drawer open={isAdding} anchor={'right'} onClose={() => setIsAdding(false)}>
                 <FlexColumn className={styles.addForm} gap={20}>
-                    <H4>Add New Event</H4>
+                    <H4>{role === 'edit' ? 'Editing Event' : 'Add New Event'}</H4>
                     <FlexColumn style={{ height: '100%' }}>
                         <FlexColumn grow={1} gap={20}>
                             <TextField
@@ -165,7 +176,6 @@ export const EventsPage = ({
                             />
                             <FlexRow gap={10}>
                                 <DatePicker
-                                    disablePast
                                     label="Date"
                                     value={adding.eventDate ? dayjs(adding.eventDate) : null}
                                     onChange={(value) => {
@@ -186,38 +196,37 @@ export const EventsPage = ({
                                     }}
                                 />
                             </FlexRow>
-                            <FlexRow justifyContent="flex-end">
-                                <ImageUpload
-                                    title={'Upload Event Image'}
-                                    onChange={(files) => {
-                                        const file = files[0];
-                                        if (!file) {
-                                            setAdding((adding) => ({
-                                                ...adding,
-                                                heroImage: undefined
-                                            }));
-                                            return;
+                            <H6>App Config </H6>
+                            <TextField
+                                size="small"
+                                value={adding?.config?.backgroundPosition}
+                                onChange={(evt) => {
+                                    setAdding((adding) => ({
+                                        ...adding,
+                                        config: {
+                                            ...adding.config,
+                                            backgroundPosition: evt.target.value
                                         }
-
-                                        setAdding((adding) => ({
-                                            ...adding,
-                                            heroImage: {
-                                                photoId: v4(),
-                                                eventId: adding.eventId!,
-                                                role: 'hero',
-                                                photoData: file,
-                                                name: file.name,
-                                                size: file.size,
-                                                contentType: file.type,
-                                                author: '',
-                                                authorName: '',
-                                                created: dayjs().toISOString(),
-                                                metadata: {}
-                                            }
-                                        }));
-                                    }}
-                                />
-                            </FlexRow>
+                                    }));
+                                }}
+                                label="Background Position"
+                            />
+                            <TextField
+                                size="small"
+                                multiline
+                                rows={8}
+                                value={adding?.config?.text}
+                                onChange={(evt) => {
+                                    setAdding((adding) => ({
+                                        ...adding,
+                                        config: {
+                                            ...adding.config,
+                                            text: evt.target.value
+                                        }
+                                    }));
+                                }}
+                                label="Text"
+                            />
                         </FlexColumn>
                         <FlexRow justifyContent="flex-end" gap={10}>
                             <Button onClick={() => setIsAdding(false)} variant="outlined">

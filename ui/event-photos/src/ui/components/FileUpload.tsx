@@ -81,7 +81,7 @@ export const FileUpload = ({
                     }
                 }}
             >
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: 'flex', gap: 10 }}>
                     {icon || <FileUploadIcon />}
                     <div>{title || 'Upload File'}</div>
                 </div>

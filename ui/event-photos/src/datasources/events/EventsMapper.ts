@@ -7,8 +7,9 @@ export class EventsMapper {
             eventId: event.eventId,
             name: event.name,
             description: event.description,
-            heroImageId: event.heroImage!.photoId,
+            heroImageId: event.heroImage?.photoId || event.heroImageId,
             eventDate: event.eventDate.toISOString(),
+            config: event.config,
             location: event.location,
             createdDate: event.createdDate.toISOString()
         };
@@ -22,6 +23,7 @@ export class EventsMapper {
             heroImageId: response.heroImageId,
             eventDate: dayjs(response.eventDate).toDate(),
             location: response.location,
+            config: response.config,
             createdDate: dayjs(response.createdDate).toDate(),
             lastModified: dayjs(response.lastModified).toDate()
         };

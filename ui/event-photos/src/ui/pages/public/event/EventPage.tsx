@@ -73,9 +73,20 @@ export function EventPage({
                 fullWidth
                 className={styles.appContent}
                 style={{
+                    position: 'relative',
+                    backgroundPosition: `${event.item?.config?.backgroundPosition || 'center'} center`,
                     backgroundImage: `url(/api/event-photos/v0/public/events/${eventId}/photos/${event.item?.heroImageId}/full)`
                 }}
             >
+                {event.item?.config?.text && (
+                    <div
+                        style={{
+                            userSelect: 'none',
+                            position: 'absolute'
+                        }}
+                        dangerouslySetInnerHTML={{ __html: event.item?.config?.text }}
+                    ></div>
+                )}
                 <FlexRow justifyContent="flex-end">
                     <UserIcon className={styles.login} onClick={() => onNavigate(urls.ADMIN)} />
                 </FlexRow>
@@ -97,8 +108,8 @@ export function EventPage({
             </FlexColumn>
             <footer id="photoUpload" className={styles.otherContent}>
                 <FlexColumn gap={20} fullHeight>
-                    <FlexRow justifyContent="space-between" alignItems="center">
-                        <H4>Photo Gallery</H4>
+                    <FlexColumn gap={10}>
+                        <H4>Gallery</H4>
 
                         <FlexRow gap={10}>
                             {/* <Button
@@ -113,7 +124,7 @@ export function EventPage({
                                 multiple={true}
                                 accept="image/*,video/*"
                                 icon={<UploadFile />}
-                                title=" "
+                                title="Upload"
                                 onBeforePrompt={async () => {
                                     if (!authorName) {
                                         await promptForAuthor();
@@ -133,7 +144,10 @@ export function EventPage({
                                     setIsUploading(true);
                                 }}
                             >
-                                <AddAPhoto />
+                                <FlexRow gap={10}>
+                                    <AddAPhoto />
+                                    <span>Take</span>
+                                </FlexRow>
                             </Button>
                         </FlexRow>
                         {isUploading && (
@@ -150,12 +164,13 @@ export function EventPage({
                                 onClose={() => setIsUploading(false)}
                             />
                         )}
-                    </FlexRow>
+                    </FlexColumn>
                     <Divider />
                     <FlexRow grow={1}>
                         <PhotoGalleryController eventId={eventId} />
                     </FlexRow>
                 </FlexColumn>
+
                 <FileUploadModal
                     eventId={eventId}
                     files={uploadFiles}

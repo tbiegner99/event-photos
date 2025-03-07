@@ -13,14 +13,15 @@ export class EventsDatasource extends BaseDatasource {
 
   async upsertEvent(event: EventData): Promise<EventData> {
     const query = `
-        INSERT INTO events (event_id, name, description, hero_image_id, event_date, location,created_date, last_modified)
-        VALUES ($1, $2, $3, $4, $5, $6, now(), now())
+        INSERT INTO events (event_id, name, description, hero_image_id, event_date, location,config,created_date, last_modified)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, now(), now())
         ON CONFLICT (event_id) DO UPDATE
         SET name = $2,
             description = $3,
             hero_image_id = $4,
             event_date = $5,
             location = $6,
+            config = $7,
             last_modified = NOW()
         RETURNING *;
         `;
@@ -31,6 +32,7 @@ export class EventsDatasource extends BaseDatasource {
       event.heroImageId,
       event.eventDate,
       event.location,
+      event.config,
     ];
     const results = await this.execQuery(query, values);
     return this.mapper.fromDBRow(results[0]);

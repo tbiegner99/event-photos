@@ -19,6 +19,7 @@ export const EventsPageController = () => {
             events={events}
             onSave={async (event: EventData) => {
                 await Services.events.addEvent(event);
+                loadEvents();
             }}
         />
     );

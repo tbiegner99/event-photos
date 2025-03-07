@@ -5,6 +5,7 @@ export interface EventData {
   heroImageId: string;
   eventDate: string;
   location: string;
+  config: any;
   lastModified: string;
   createdDate: string;
 }

@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { EventData } from './models';
 import { Request } from 'express';
 import Joi from 'joi';
+import { config } from 'process';
 
 export class EventsMapper {
   fromRequestBody(req: Request): EventData {
@@ -13,6 +14,7 @@ export class EventsMapper {
       heroImageId: Joi.string().required(),
       eventDate: Joi.date().iso().required(),
       location: Joi.string().required(),
+      config: Joi.object().required(),
     };
     const { error, value: validated } = Joi.object(schema).unknown(true).validate(body);
     if (error) {
@@ -25,6 +27,7 @@ export class EventsMapper {
       heroImageId: validated.heroImageId,
       eventDate: validated.eventDate,
       location: validated.location,
+      config: validated.config,
       lastModified: dayjs().toISOString(),
       createdDate: dayjs().toISOString(),
     };
@@ -35,7 +38,7 @@ export class EventsMapper {
       name: row.name,
       description: row.description,
       heroImageId: row.hero_image_id,
-
+      config: row.config,
       eventDate: dayjs(row.event_date).toISOString(),
       location: row.location,
       lastModified: dayjs(row.last_modified).toISOString(),

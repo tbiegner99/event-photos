@@ -249,10 +249,25 @@ export const PhotoUploader = ({
         if (image) {
             return null;
         } else if (videoUrl) {
-            return <video key="playback" src={videoUrl} className={styles.media} controls></video>;
+            return (
+                <video
+                    key="playback"
+                    src={videoUrl}
+                    className={styles.media}
+                    controls
+                    playsInline
+                ></video>
+            );
         } else {
             return (
-                <video key="record" ref={videoRef} muted className={styles.media} autoPlay></video>
+                <video
+                    key="record"
+                    ref={videoRef}
+                    muted
+                    className={styles.media}
+                    autoPlay
+                    playsInline
+                ></video>
             );
         }
     };

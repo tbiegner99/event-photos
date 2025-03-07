@@ -19,9 +19,10 @@ import { FileUploadModal } from './FileUploadModal';
 import { Photo } from '../../../../models/Photo';
 import { v4 } from 'uuid';
 import dayjs from 'dayjs';
-import { H1, H3, H4 } from '../../../components/typography/Typography';
+import { H1, H3, H4, H6 } from '../../../components/typography/Typography';
 import { useAuthor } from '../../../context/AuthorContext';
 import { useSessionContext } from 'supertokens-auth-react/recipe/session';
+import zIndex from '@mui/material/styles/zIndex';
 
 export function EventPage({
     eventId,
@@ -70,10 +71,13 @@ export function EventPage({
     return (
         <section className={styles.appContainer}>
             <FlexColumn
-                fullWidth
                 className={styles.appContent}
                 style={{
-                    position: 'relative',
+                    height: '100vh',
+                    width: '100vw',
+                    zIndex: '-1',
+
+                    position: 'fixed',
                     backgroundPosition: `${event.item?.config?.backgroundPosition || 'center'} center`,
                     backgroundImage: `url(/api/event-photos/v0/public/events/${eventId}/photos/${event.item?.heroImageId}/full)`
                 }}
@@ -87,10 +91,13 @@ export function EventPage({
                         dangerouslySetInnerHTML={{ __html: event.item?.config?.text }}
                     ></div>
                 )}
+            </FlexColumn>
+            <FlexColumn fullWidth fullHeight>
                 <FlexRow justifyContent="flex-end">
                     <UserIcon className={styles.login} onClick={() => onNavigate(urls.ADMIN)} />
                 </FlexRow>
                 <FlexRow grow={1}></FlexRow>
+
                 <FlexRow justifyContent="center">
                     <MoreIcon
                         className={styles.scrollDown}
@@ -107,7 +114,7 @@ export function EventPage({
                 </FlexRow>
             </FlexColumn>
             <footer id="photoUpload" className={styles.otherContent}>
-                <FlexColumn gap={20} fullHeight>
+                <FlexColumn gap={20}>
                     <FlexColumn gap={10}>
                         <H4>Gallery</H4>
 

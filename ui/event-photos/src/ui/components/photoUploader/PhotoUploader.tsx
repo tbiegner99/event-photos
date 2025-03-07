@@ -149,6 +149,7 @@ export const PhotoUploader = ({
             });
         }
     };
+    const zoomTimeout = useRef<number | null>(null);
     useEffect(() => {
         const handler = (e: Event) => e.preventDefault();
         document.addEventListener('gesturestart', handler);
@@ -208,9 +209,14 @@ export const PhotoUploader = ({
         }
     }, [videoRef, stream]);
     useEffect(() => {
-        stream?.getVideoTracks()[0].applyConstraints({
-            advanced: [{ zoom: currentZoom }]
-        } as any);
+        if (zoomTimeout.current) {
+            clearTimeout(zoomTimeout.current);
+        }
+        zoomTimeout.current = window.setTimeout(() => {
+            stream?.getVideoTracks()[0].applyConstraints({
+                advanced: [{ zoom: currentZoom }]
+            } as any);
+        }, 100);
     }, [currentZoom]);
     useGesture(
         {
@@ -308,6 +314,8 @@ export const PhotoUploader = ({
                     onClick={() => {
                         stopStream();
                         setStream(null);
+                        setCurrentZoom(1);
+
                         setFacingMode(facingMode === 'user' ? 'environment' : 'user');
                     }}
                 >

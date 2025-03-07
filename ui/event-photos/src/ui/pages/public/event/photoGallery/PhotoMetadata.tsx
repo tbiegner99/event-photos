@@ -23,7 +23,7 @@ export const PhotoMetadata = ({
                     size="small"
                     variant="outlined"
                     color="primary"
-                    label={photo.authorName}
+                    label={photo.authorName || 'Anonymous'}
                 ></Chip>
             </FlexRow>
             <FlexRow gap={10} alignItems="center">

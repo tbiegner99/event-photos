@@ -92,7 +92,12 @@ export function EventPage({
                     ></div>
                 )}
             </FlexColumn>
-            <FlexColumn fullWidth fullHeight>
+            <FlexColumn
+                style={{
+                    height: '100vh',
+                    width: '100vw'
+                }}
+            >
                 <FlexRow justifyContent="flex-end">
                     <UserIcon className={styles.login} onClick={() => onNavigate(urls.ADMIN)} />
                 </FlexRow>

@@ -26,6 +26,9 @@ pipeline {
                     agent {
                       docker "node:20"
                     }
+                    environment {
+                        BASE_PATH = "/events"
+                    }
                     steps {
                         git(
                           credentialsId: "tj-github",

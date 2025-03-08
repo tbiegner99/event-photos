@@ -12,8 +12,8 @@ import { EventData } from '../../../../models/Event';
 import { v4 } from 'uuid';
 import dayjs from 'dayjs';
 import { LoadedItem } from '../../../../utils/LoadedItem';
-import { Link, UploadFile } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { Link as LinkIcon, QrCode, UploadFile } from '@mui/icons-material';
+import { Link, useNavigate } from 'react-router-dom';
 import { urls } from '../../../../utils/constants';
 import { H1, H4, H5, H6 } from '../../../components/typography/Typography';
 
@@ -24,7 +24,6 @@ export const EventsPage = ({
     onSave: (data: EventData) => Promise<any>;
     events: LoadedItem<EventData[]>;
 }) => {
-    const onNavigate = useNavigate();
     const columns: GridColDef[] = [
         { field: 'name', headerName: 'Event', flex: 2 },
         { field: 'description', headerName: 'Description', flex: 3 },
@@ -50,20 +49,19 @@ export const EventsPage = ({
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
-            width: 100,
+            width: 170,
             cellClassName: 'actions',
             getActions: ({ id }) => {
                 return [
-                    <GridActionsCellItem
-                        title="Go To Event Page"
-                        icon={<Link />}
-                        label="Edit"
-                        className="textPrimary"
-                        onClick={() => {
-                            onNavigate(urls.event(id as string));
-                        }}
-                        color="inherit"
-                    />,
+                    <Link to={urls.event(id as string)}>
+                        <GridActionsCellItem
+                            title="Go To Event Page"
+                            icon={<LinkIcon />}
+                            label="Edit"
+                            className="textPrimary"
+                            color="inherit"
+                        />
+                    </Link>,
                     <GridActionsCellItem
                         title="Copy Id"
                         icon={<CopyIcon />}
@@ -87,7 +85,15 @@ export const EventsPage = ({
                             }
                         }}
                         color="inherit"
-                    />
+                    />,
+                    <Link to={urls.eventQR(id as string)} target="_blank">
+                        <GridActionsCellItem
+                            icon={<QrCode />}
+                            label="QR Code"
+                            className="textPrimary"
+                            color="inherit"
+                        />
+                    </Link>
                 ];
             }
         }
@@ -117,7 +123,9 @@ export const EventsPage = ({
                                     description: '',
                                     location: '',
                                     name: '',
-                                    config: {},
+                                    config: {
+                                        qrSize: 400
+                                    },
                                     eventDate: dayjs().toDate(),
                                     createdDate: dayjs().toDate()
                                 });
@@ -210,6 +218,20 @@ export const EventsPage = ({
                                     }));
                                 }}
                                 label="Background Position"
+                            />
+                            <TextField
+                                size="small"
+                                value={adding?.config?.qrSize || 400}
+                                onChange={(evt) => {
+                                    setAdding((adding) => ({
+                                        ...adding,
+                                        config: {
+                                            ...adding.config,
+                                            qrSize: evt.target.value
+                                        }
+                                    }));
+                                }}
+                                label="QR Size"
                             />
                             <TextField
                                 size="small"

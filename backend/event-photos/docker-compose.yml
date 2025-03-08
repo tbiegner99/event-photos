@@ -3,12 +3,12 @@ networks:
   event-photos-local-dev:
     external: true
 services:
-  'event-photos':
+  event-photos:
     build: $EVENT_PHOTOS_HOME/backend
     container_name: 'event-photos'
     networks:
       - event-photos-local-dev
-    env_file: "secrets.env"
+    env_file: "$EVENT_PHOTOS_HOME/backend/event-photos/secrets.env"
 
     ports:
       - '8080'

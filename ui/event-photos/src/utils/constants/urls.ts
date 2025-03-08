@@ -5,5 +5,6 @@ export const urls = {
     ADMIN_EVENT: BASE_URL + '/admin/event/:eventId',
     EVENTS: BASE_URL + '/:eventId',
     event: (eventId: string) => `${BASE_URL}/${eventId}`,
+    eventQR: (eventId: string) => `${BASE_URL}/${eventId}/qr`,
     adminEvent: (eventId: string) => `${BASE_URL}/admin/event/${eventId}`
 };

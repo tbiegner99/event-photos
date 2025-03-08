@@ -6,8 +6,10 @@ import { Services } from '../../../../dependencies';
 import { EventPage } from './EventPage';
 
 import { Photo } from '../../../../models/Photo';
+import { EventQRPage } from './EventQRPage';
+import { CircularProgress } from '@mui/material';
 
-export const EventPageController = () => {
+export const EventQRPageController = () => {
     const { eventId = '' } = useParams();
     const [event, setEvent] = React.useState<LoadedItem<EventData>>(LoadedItem.unloaded());
     const loadEvent = async () => {
@@ -21,9 +23,8 @@ export const EventPageController = () => {
         loadEvent();
     }, []);
 
-    const onUpload = async (photo: Photo) => {
-        await Services.events.uploadPhoto(photo);
-    };
-
-    return <EventPage eventId={eventId} event={event} onUpload={onUpload} />;
+    if (!event.isLoaded()) {
+        return <CircularProgress size={100} />;
+    }
+    return <EventQRPage event={event.item!} qrSize={event.item?.config?.qrSize || 400} />;
 };

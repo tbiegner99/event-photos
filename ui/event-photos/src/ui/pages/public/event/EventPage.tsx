@@ -13,7 +13,15 @@ import { Button, Divider } from '@mui/material';
 import { PhotoGalleryController } from './photoGallery/PhotoGalleryController';
 import { urls } from '../../../../utils/constants/urls';
 import { FileUpload as FileUploader } from '../../../components/FileUpload';
-import { AddAPhoto, Camera, CameraAlt, FileUpload, UploadFile } from '@mui/icons-material';
+import {
+    AddAPhoto,
+    Camera,
+    CameraAlt,
+    FileUpload,
+    QrCode,
+    Share,
+    UploadFile
+} from '@mui/icons-material';
 import { AddTagModal } from './photoGallery/addTagModal/AddTagModal';
 import { FileUploadModal } from './FileUploadModal';
 import { Photo } from '../../../../models/Photo';
@@ -93,13 +101,19 @@ export function EventPage({
                 )}
             </FlexColumn>
             <FlexColumn
+                fullWidth
                 style={{
-                    height: '100vh',
-                    width: '100vw'
+                    height: '100vh'
                 }}
             >
                 <FlexRow justifyContent="flex-end">
-                    <UserIcon className={styles.login} onClick={() => onNavigate(urls.ADMIN)} />
+                    <FlexRow gap={10} style={{ marginRight: 10 }}>
+                        <QrCode
+                            className={styles.login}
+                            onClick={() => window.open(urls.eventQR(eventId), '_blank')}
+                        />
+                        <UserIcon className={styles.login} onClick={() => onNavigate(urls.ADMIN)} />
+                    </FlexRow>
                 </FlexRow>
                 <FlexRow grow={1}></FlexRow>
 

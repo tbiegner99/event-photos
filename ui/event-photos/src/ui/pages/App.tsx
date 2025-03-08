@@ -18,6 +18,7 @@ import { AuthorProvider } from '../context/AuthorContext';
 import { Typography } from '@mui/material';
 import { EventPageController } from './public/event/EventPageController';
 import { AdminEventPageController } from './admin/events/editEvent/AdminEventPageController';
+import { EventQRPageController } from './public/event/EventQRPageController';
 
 function App() {
     return (
@@ -58,9 +59,14 @@ function App() {
                                         path="event/:eventId"
                                         element={<AdminEventPageController />}
                                     />
+
                                     <Route path="" element={<EventsPageController />} />
                                 </Route>
-                                <Route path={urls.EVENTS} element={<AppContainer />}></Route>
+                                <Route path={urls.EVENTS} element={<AppContainer />}>
+                                    <Route path="qr" element={<EventQRPageController />} />
+
+                                    <Route path="" element={<EventPageController />} />
+                                </Route>
                             </Routes>
                         </BrowserRouter>
                     </AuthRecipeComponentsOverrideContextProvider>

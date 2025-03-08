@@ -24,6 +24,11 @@ export default defineConfig((env) => ({
     plugins: [
         new rspack.HtmlRspackPlugin({
             template: path.join(__dirname, 'html', 'template.ejs.html')
+        }),
+        new rspack.EnvironmentPlugin({
+            NODE_ENV: 'development', // use 'development' unless process.env.NODE_ENV is defined
+            IMAGE_BUCKET_URL: 'https://storage.googleapis.com/event-photos.tjbiegner.com',
+            DEBUG: false
         })
     ],
     devServer: {

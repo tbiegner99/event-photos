@@ -7,30 +7,17 @@ import UserIcon from '@mui/icons-material/ManageAccounts';
 import MoreIcon from '@mui/icons-material/ExpandMore';
 import { LoadedItem } from '../../../../utils/LoadedItem';
 import { EventData } from '../../../../models/Event';
-import { Services } from '../../../../dependencies';
-import { PhotoUploader } from '../../../components/photoUploader/PhotoUploader';
 import { Button, Divider } from '@mui/material';
 import { PhotoGalleryController } from './photoGallery/PhotoGalleryController';
 import { urls } from '../../../../utils/constants/urls';
 import { FileUpload as FileUploader } from '../../../components/FileUpload';
-import {
-    AddAPhoto,
-    Camera,
-    CameraAlt,
-    FileUpload,
-    QrCode,
-    Share,
-    UploadFile
-} from '@mui/icons-material';
-import { AddTagModal } from './photoGallery/addTagModal/AddTagModal';
+import { AddAPhoto, QrCode, UploadFile } from '@mui/icons-material';
 import { FileUploadModal } from './FileUploadModal';
 import { Photo } from '../../../../models/Photo';
 import { v4 } from 'uuid';
 import dayjs from 'dayjs';
-import { H1, H3, H4, H6 } from '../../../components/typography/Typography';
+import { H4 } from '../../../components/typography/Typography';
 import { useAuthor } from '../../../context/AuthorContext';
-import { useSessionContext } from 'supertokens-auth-react/recipe/session';
-import zIndex from '@mui/material/styles/zIndex';
 
 export function EventPage({
     eventId,
@@ -45,16 +32,7 @@ export function EventPage({
     const { authorName, author, promptForAuthor, clearAuthor } = useAuthor();
     const [isUploading, setIsUploading] = React.useState(false);
     const [uploadFiles, setUploadFiles] = React.useState<File[] | null>(null);
-    // React.useEffect(() => {
-    //     if (event.isLoaded()) {
-    //         const target = document.getElementById('photoUpload');
-    //         const targetPosition = target!.getBoundingClientRect().top + window.pageYOffset;
-    //         window.scrollTo({
-    //             top: targetPosition,
-    //             behavior: 'smooth'
-    //         });
-    //     }
-    // }, [event]);
+
     const uploadPhoto = async (blob: Blob, metadata: any) => {
         const photoId = v4();
         const photo = {
@@ -136,16 +114,7 @@ export function EventPage({
                 <FlexColumn gap={20}>
                     <FlexColumn gap={10}>
                         <H4>Gallery</H4>
-
                         <FlexRow gap={10}>
-                            {/* <Button
-                                onClick={() => {
-                                    localStorage.clear();
-                                    clearAuthor();
-                                }}
-                            >
-                                DEBUG
-                            </Button> */}
                             <FileUploader
                                 multiple={true}
                                 accept="image/*,video/*"
@@ -175,25 +144,29 @@ export function EventPage({
                                     <span>Take</span>
                                 </FlexRow>
                             </Button>
+                            {process.env.DEBUG && (
+                                <Button
+                                    onClick={() => {
+                                        clearAuthor();
+                                    }}
+                                >
+                                    DEBUG
+                                </Button>
+                            )}
                         </FlexRow>
-                        {isUploading && (
-                            <PhotoUploader
-                                eventId={eventId}
-                                onUploadImage={async (blob, metadata) => {
-                                    await uploadPhoto(blob, metadata);
-                                    setIsUploading(false);
-                                }}
-                                onUploadVideo={async (blob, metadata) => {
-                                    await uploadPhoto(blob, metadata);
-                                    setIsUploading(false);
-                                }}
-                                onClose={() => setIsUploading(false)}
-                            />
-                        )}
                     </FlexColumn>
                     <Divider />
                     <FlexRow grow={1}>
-                        <PhotoGalleryController eventId={eventId} />
+                        <PhotoGalleryController
+                            isUploading={isUploading}
+                            onUpload={async (blob, metadata) => {
+                                await uploadPhoto(blob, metadata);
+                                setIsUploading(false);
+                            }}
+                            onUploadCancelled={() => setIsUploading(false)}
+                            eventId={eventId}
+                            event={event.item!}
+                        />
                     </FlexRow>
                 </FlexColumn>
 

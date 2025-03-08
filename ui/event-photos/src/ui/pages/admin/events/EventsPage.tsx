@@ -35,7 +35,7 @@ export const EventsPage = ({
             renderCell: (params) => {
                 return (
                     <img
-                        src={`https://storage.googleapis.com/event-photos.tjbiegner.com/events/${params.row.eventId}/hero/thumbnails/${params.value}`}
+                        src={`${process.env.IMAGE_BUCKET_URL}/events/${params.row.eventId}/hero/thumbnails/${params.value}`}
                         alt="Event"
                         style={{ maxWidth: '100%', maxHeight: '100%' }}
                     />
@@ -124,7 +124,8 @@ export const EventsPage = ({
                                     location: '',
                                     name: '',
                                     config: {
-                                        qrSize: 400
+                                        qrSize: 400,
+                                        pollInterval: 30000
                                     },
                                     eventDate: dayjs().toDate(),
                                     createdDate: dayjs().toDate()
@@ -218,6 +219,20 @@ export const EventsPage = ({
                                     }));
                                 }}
                                 label="Background Position"
+                            />
+                            <TextField
+                                size="small"
+                                value={adding?.config?.pollInterval || 30000}
+                                onChange={(evt) => {
+                                    setAdding((adding) => ({
+                                        ...adding,
+                                        config: {
+                                            ...adding.config,
+                                            pollInterval: evt.target.value
+                                        }
+                                    }));
+                                }}
+                                label="Poll Interval"
                             />
                             <TextField
                                 size="small"

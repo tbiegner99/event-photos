@@ -64,6 +64,7 @@ export const PhotoPreview = ({
                         src={photo.url}
                         controls
                         autoPlay={slideshow}
+                        playsInline
                     />
                 )}
             </div>

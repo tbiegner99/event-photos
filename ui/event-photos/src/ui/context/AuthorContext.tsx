@@ -52,6 +52,7 @@ export const AuthorProvider = function (props: any) {
             });
         },
         clearAuthor: () => {
+            window.localStorage.removeItem('author');
             setAuthor({ ...author, author: null, authorName: '' });
         }
     });

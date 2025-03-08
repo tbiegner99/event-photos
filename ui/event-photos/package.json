@@ -11,7 +11,7 @@
   "scripts": {
     "test": "jest --config jest.config.js",
     "coverage": "npm run test -- --coverage",
-    "dev": "BASE_PATH=/ rspack serve --env NO_HASH=true --env MODE=development",
+    "dev": "BASE_PATH=/ DEBUG=true rspack serve --env NO_HASH=true --env MODE=development --env",
     "build": "rspack build --env MODE=production --env ENVIRONMENT=lower",
     "test-watch": "jest --config jest.config.js --watchAll",
     "test-debug": "node --inspect ./node_modules/jest/bin/jest.js --watchAll",

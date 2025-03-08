@@ -4,11 +4,25 @@ import { LoadedItem } from '../../../../../utils/LoadedItem';
 import { Photo, PhotoFilters } from '../../../../../models/Photo';
 import { Services } from '../../../../../dependencies';
 import { PageInfo } from '../../../../../models/Pagination';
+import { EventData } from '../../../../../models/Event';
+import { PhotoUploader } from '../../../../components/photoUploader/PhotoUploader';
 
-const PHOTO_POLL_INTERVAL = 10000;
+const DEFAULT_PHOTO_POLL_INTERVAL = 20000;
 const PHOTO_PAGE_SIZE = 6;
 
-export const PhotoGalleryController = ({ eventId }: { eventId: string }) => {
+export const PhotoGalleryController = ({
+    eventId,
+    isUploading,
+    onUpload,
+    onUploadCancelled,
+    event
+}: {
+    eventId: string;
+    isUploading: boolean;
+    onUpload: (blob: Blob, metadata: any) => Promise<any>;
+    onUploadCancelled: () => void;
+    event: EventData;
+}) => {
     const [pageInfo, setPageInfo] = React.useState({
         page: 0,
         pageSize: PHOTO_PAGE_SIZE
@@ -45,9 +59,13 @@ export const PhotoGalleryController = ({ eventId }: { eventId: string }) => {
         loadPhotos(pageInfo, { eventId, endDate: loadDate.current });
     }, [pageInfo]);
     useEffect(() => {
+        let interval = Number.parseInt(event.config?.pollInterval || DEFAULT_PHOTO_POLL_INTERVAL);
+        if (Number.isNaN(interval)) {
+            interval = DEFAULT_PHOTO_POLL_INTERVAL;
+        }
         photosPoll.current = window.setInterval(() => {
             pollNewPhotos();
-        }, PHOTO_POLL_INTERVAL);
+        }, interval);
         return () => {
             if (photosPoll.current) {
                 window.clearInterval(photosPoll.current);
@@ -62,16 +80,32 @@ export const PhotoGalleryController = ({ eventId }: { eventId: string }) => {
         );
     };
     return (
-        <PhotoGallery
-            photos={photos}
-            hasMorePhotos={hasMorePhotos}
-            onPhotoUpdated={onPhotoUpdated}
-            onLoadMore={() =>
-                setPageInfo({
-                    pageSize: pageInfo.pageSize,
-                    page: pageInfo.page + 1
-                })
-            }
-        />
+        <>
+            {isUploading && (
+                <PhotoUploader
+                    eventId={eventId}
+                    onUploadImage={async (blob, metadata) => {
+                        await onUpload(blob, metadata);
+                        pollNewPhotos();
+                    }}
+                    onUploadVideo={async (blob, metadata) => {
+                        await onUpload(blob, metadata);
+                        pollNewPhotos();
+                    }}
+                    onClose={() => onUploadCancelled()}
+                />
+            )}
+            <PhotoGallery
+                photos={photos}
+                hasMorePhotos={hasMorePhotos}
+                onPhotoUpdated={onPhotoUpdated}
+                onLoadMore={() =>
+                    setPageInfo({
+                        pageSize: pageInfo.pageSize,
+                        page: pageInfo.page + 1
+                    })
+                }
+            />
+        </>
     );
 };
